@@ -15,7 +15,6 @@ repeat_gtf=./DCC/combine_repeat1.gtf
 genome_annotation=./references/genome_anno/gencode.v38.primary_assembly.annotation.gff3
 genome_fasta=./references/genome_fasta/GRCh38.primary_assembly.genome.fa
 
-module load Salmon
 module load STAR
 module load Python
 module load SAMtools
