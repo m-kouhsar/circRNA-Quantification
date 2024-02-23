@@ -1,35 +1,24 @@
 #!/bin/bash
-#SBATCH -A Research_Project-MRC164847 # research project to submit under.
+#SBATCH -A  # research project to submit under.
 #SBATCH --export=ALL # export all environment variables to the batch job.
 #SBATCH -D . # set working directory to .
 #SBATCH -p mrcq # submit to the parallel test queue
-#SBATCH --time=200:00:00 # Maximum wall time for the job
+#SBATCH --time=20:00:00 # Maximum wall time for the job
 #SBATCH --nodes=1 # specify number of nodes.
 #SBATCH --ntasks-per-node=16 # specify number of processors.
 #SBATCH --mail-type=END # send email at job completion
 #SBATCH --mail-user=m.kouhsar@exeter.ac.uk # email address
 
+genome_index_dir=./genome_index1
+data_dir=./RNA_Seq
+repeat_gtf=./DCC/combine_repeat1.gtf
+genome_annotation=./references/genome_anno/gencode.v38.primary_assembly.annotation.gff3
+genome_fasta=./references/genome_fasta/GRCh38.primary_assembly.genome.fa
 
-cd /lustre/projects/Research_Project-191391/
 module load Salmon
 module load STAR
 module load Python
 module load SAMtools
-
-# genome indexing
-
-#STAR --runThreadN 16 \
-      #--runMode genomeGenerate \
-     #--genomeDir /lustre/projects/Research_Project-191391/STAR/references/genome_index/ \
-     #--genomeFastaFiles /lustre/projects/Research_Project-191391/STAR/references/genome_fasta/GRCh38.primary_assembly.genome.fa \
-     #--sjdbGTFfile /lustre/projects/Research_Project-191391/STAR/references/genome_anno/gencode.v38.primary_assembly.annotation.gff3 \
-     #--sjdbOverhang 150\
-
-genome_index_dir=/lustre/projects/Research_Project-191391/STAR/references/genome_index1/
-data_dir=/lustre/projects/Research_Project-191391/Download_Synapse/ROSMAP_RNAseq1/
-
-mkdir -p ${data_dir}salmon/
-salmon_dir=${data_dir}salmon/
 
 for i in ${data_dir}*r1*.gz
 do
@@ -168,15 +157,15 @@ do
 		 -mt2 @mate2 \
 		 -T 16 \
 		 -D \
-		 -R /lustre/projects/Research_Project-191391/DCC/combine_repeat1.gtf \
-		 -an /lustre/projects/Research_Project-191391/STAR/references/genome_anno/gencode.v38.primary_assembly.annotation.gff3 \
+		 -R $repeat_gtf \
+		 -an $genome_annotation \
 		 -Pi \
 		 -F \
 		 -M \
 		 -Nr 1 1 \
 		 -fg \
 		 -G \
-		 -A /lustre/projects/Research_Project-191391/STAR/references/genome_fasta/GRCh38.primary_assembly.genome.fa \
+		 -A $genome_fasta \
 		 -B @bam_files
       
    rm -r ${data_dir}DCC/${sample_name}/_tmp_DCC/
