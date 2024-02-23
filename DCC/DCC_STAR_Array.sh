@@ -48,22 +48,7 @@ do
     temp_dir=${data_dir}star/temp
     out_salmon=$salmon_dir${sample_name}
 
-    #echo "R1 file is $R1"
-    #echo "R2 file is $R2"
     echo "start sample  $sample_name"
-    #echo "out dir both is $out_dir_both"
-    #echo "out dir m1 is $out_dir_mate1"
-    #echo "out dir m2 is $out_dir_mate2"
-    #echo "temp dir is $temp_dir"
-
-   #salmon 
-    #salmon quant -i /lustre/projects/Research_Project-191391/salmon/ref/gencode.v38.transcripts_index \
-			#-l A -1 $R1 -2 $R2 \
-			#-p 16 --validateMappings \
-			#--geneMap /lustre/projects/Research_Project-191391/salmon/ref/salmon_gene_transcript_v38.txt \
-			#-o $out_salmon \
-   
-    #echo "salmon alignbment was done"
 
     #alighmnet both reads
 
