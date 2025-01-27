@@ -82,4 +82,6 @@ do
 		-t $thread
 done
 
+echo "All the process is done!"
+
 
