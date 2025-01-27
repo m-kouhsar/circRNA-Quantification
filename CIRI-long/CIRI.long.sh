@@ -55,21 +55,31 @@ mkdir -p $out_dir_collapse
 
 for f in ${fastq_files1[@]}
 do
-    f_name=$(basename $f)
-    f_name=${f_name%".fastq"}
+	f_name=$(basename $f)
+	f_name=${f_name%".fastq"}
+	echo "*********************************************************************************"
+	echo "*********************************************************************************"
+	echo "                Running CIRI-long Call on ${f_name}:
+	echo "*********************************************************************************"
+	echo "*********************************************************************************"
 	CIRI-long call -i $f \
-               -o ${out_dir_call}/${f_name} \
-               -r $genome_fasta \
-               -p $f_name \
-               -a $genome_gtf \
-               -t $thread
+		-o ${out_dir_call}/${f_name} \
+		-r $genome_fasta \
+		-p $f_name \
+		-a $genome_gtf \
+		-t $thread
 	echo $f_name ${out_dir_call}/${f_name}/${f_name}.cand_circ.fa > ${out_dir_call}/${f_name}/${f_name}.lst
+	echo "*********************************************************************************"
+	echo "*********************************************************************************"
+	echo "                Running CIRI-long Collapse on ${f_name}:
+	echo "*********************************************************************************"
+	echo "*********************************************************************************"
 	CIRI-long collapse -i ${out_dir_call}/${f_name}/${f_name}.lst \
-                    -o ${out_dir_collapse}/${f_name} \
-                    -p $f_name \
-                    -r $genome_fasta \
-                    -a $genome_gtf \
-                    -t $thread
+		-o ${out_dir_collapse}/${f_name} \
+		-p $f_name \
+		-r $genome_fasta \
+		-a $genome_gtf \
+		-t $thread
 done
 
 
