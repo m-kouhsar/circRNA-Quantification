@@ -28,6 +28,8 @@ echo Output directory: $out_dir
 echo Fastq files directory: $fastq_dir
 echo Genome fasta file: $genome_fasta
 echo Genome fasta file: $genome_gtf
+echo Number of samples: ${#fastq_files[@]}
+echo Number of threads: $thread
 
 echo "##########################################################################"
 echo -e '\n'
