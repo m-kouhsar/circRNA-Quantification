@@ -13,10 +13,10 @@
 #########################################################################################
 #########################################################################################
 
-out_dir=/lustre/projects/Research_Project-191391/Morteza/circRNA/Results
-fastq_dir=/lustre/projects/Research_Project-191391/Morteza/circRNA/Raw/Rosie_longRead
-genome_fasta=/lustre/projects/Research_Project-191391/Morteza/circRNA/Ref_Genome/GRCh38.p14.genome.fa
-genome_gtf=/lustre/projects/Research_Project-191391/Morteza/circRNA/Ref_Genome/gencode.v47.chr_patch_hapl_scaff.annotation.gtf
+out_dir=./Results
+fastq_dir=./Raw
+genome_fasta=./Ref_Genome/GRCh38.p14.genome.fa
+genome_gtf=./Ref_Genome/gencode.v47.chr_patch_hapl_scaff.annotation.gtf
 thread=16
 #######################################################################################
 #######################################################################################
