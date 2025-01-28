@@ -54,14 +54,14 @@ echo -e '\n'
 
 mkdir -p $out_dir_call
 mkdir -p $out_dir_collapse
-
+i=0
 for f in ${fastq_files1[@]}
 do
 	f_name=$(basename $f)
 	f_name=${f_name%".fastq"}
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
-	echo "                Running CIRI-long Call on ${f_name}:                             "
+	echo "                Running CIRI-long Call on sample $(( i+1 )), ${f_name}:                             "
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
 	CIRI-long call -i $f \
@@ -73,7 +73,7 @@ do
 	echo $f_name ${out_dir_call}/${f_name}/${f_name}.cand_circ.fa > ${out_dir_call}/${f_name}/${f_name}.lst
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
-	echo "                Running CIRI-long Collapse on ${f_name}:                         "
+	echo "                Running CIRI-long Collapse on sample $(( i+1 )), ${f_name}:                         "
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
 	CIRI-long collapse -i ${out_dir_call}/${f_name}/${f_name}.lst \
