@@ -41,7 +41,9 @@ echo Output directory: $out_dir
 echo Fastq files directory: $fastq_dir
 echo Genome fasta file: $genome_fasta
 echo Genome fasta file: $genome_gtf
-echo Number of CPU cores: $Num_samp
+echo Total number of samples: $Num_samp
+echo Number of samples in the current array job: ${#fastq_files1[@]}
+echo Number of threads: $thread
 echo Start array index: $SLURM_ARRAY_TASK_COUNT
 echo End array index : $SLURM_ARRAY_TASK_COUNT
 echo numer of arrays: $SLURM_ARRAY_TASK_COUNT
