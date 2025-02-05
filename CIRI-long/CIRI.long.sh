@@ -12,60 +12,80 @@
 #########################################################################################
 #########################################################################################
 
-out_dir=./circRNA
-fastq_dir=./circRNA
-genome_fasta=./Ref_Genome/GRCh38.p14.genome.fa
-genome_gtf=./Ref_Genome/gencode.v47.chr_patch_hapl_scaff.annotation.gtf
+out_dir=/lustre/projects/Research_Project-191391/Morteza/circRNA/Results
+fastq_dir=/lustre/projects/Research_Project-191391/Morteza/circRNA
+genome_fasta=/lustre/projects/Research_Project-191391/Morteza/circRNA/Ref_Genome/GRCh38.p14.genome.fa
+genome_gtf=/lustre/projects/Research_Project-191391/Morteza/circRNA/Ref_Genome/gencode.v47.chr_patch_hapl_scaff.annotation.gtf
+circ_annot=
 thread=16
+collapse_only=yes
 #######################################################################################
 #######################################################################################
 
 out_dir_call=${out_dir}/CIRI.long.Call
 out_dir_collapse=${out_dir}/CIRI.long.Collapse
 fastq_files=(${fastq_dir}/*.fastq)
+collapse_only=$(echo $collapse_only | xargs)
+collapse_only=$(echo $collapse_only | tr '[:upper:]' '[:lower:]')
+circ_annot=$(echo $circ_annot | xargs)
 
 echo Output directory: $out_dir
 echo Fastq files directory: $fastq_dir
 echo Genome fasta file: $genome_fasta
 echo Genome fasta file: $genome_gtf
-echo Number of samples: ${#fastq_files[@]}
-echo Number of threads: $thread
+echo circRNA anootation file (optional): $circ_annot
+echo Running collapse mode only? $collapse_only
+echo Number of CPU cores: $thread
 
 echo "##########################################################################"
 echo -e '\n'
 
 mkdir -p $out_dir_call
 mkdir -p $out_dir_collapse
-i=0
+
 for f in ${fastq_files[@]}
 do
 	f_name=$(basename $f)
 	f_name=${f_name%".fastq"}
-	echo "*********************************************************************************"
-	echo "*********************************************************************************"
-	echo "                Running CIRI-long Call on sample $(( i+1 )), ${f_name}:                             "
-	echo "*********************************************************************************"
-	echo "*********************************************************************************"
-	CIRI-long call -i $f \
-		-o ${out_dir_call}/${f_name} \
-		-r $genome_fasta \
-		-p $f_name \
-		-a $genome_gtf \
-		-t $thread
+
+	if [ "$collapse_only" = "yes" ]
+	then
+		echo "*********************************************************************************"
+		echo "*********************************************************************************"
+		echo "                Running CIRI-long Call on ${f_name}:                             "
+		echo "*********************************************************************************"
+		echo "*********************************************************************************"
+		CIRI-long call -i $f \
+			-o ${out_dir_call}/${f_name} \
+			-r $genome_fasta \
+			-p $f_name \
+			-a $genome_gtf \
+			-t $thread
+	fi
+
 	echo $f_name ${out_dir_call}/${f_name}/${f_name}.cand_circ.fa > ${out_dir_call}/${f_name}/${f_name}.lst
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
-	echo "                Running CIRI-long Collapse on sample $(( i+1 )), ${f_name}:                         "
+	echo "                Running CIRI-long Collapse on ${f_name}:                         "
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
-	CIRI-long collapse -i ${out_dir_call}/${f_name}/${f_name}.lst \
-		-o ${out_dir_collapse}/${f_name} \
-		-p $f_name \
-		-r $genome_fasta \
-		-a $genome_gtf \
-		-t $thread
+	if [ "$circ_annot" != "" ]
+	then
+		CIRI-long collapse -i ${out_dir_call}/${f_name}/${f_name}.lst \
+			-o ${out_dir_collapse}/${f_name} \
+			-p $f_name \
+			-r $genome_fasta \
+			-a $genome_gtf \
+			-c $circ_annot \
+			-t $thread
+	else
+		CIRI-long collapse -i ${out_dir_call}/${f_name}/${f_name}.lst \
+			-o ${out_dir_collapse}/${f_name} \
+			-p $f_name \
+			-r $genome_fasta \
+			-a $genome_gtf \
+			-t $thread
+   fi
 done
 
 echo "All the process is done!"
-
-
