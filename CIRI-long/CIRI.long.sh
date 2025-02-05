@@ -12,10 +12,10 @@
 #########################################################################################
 #########################################################################################
 
-out_dir=/lustre/projects/Research_Project-191391/Morteza/circRNA/Results
-fastq_dir=/lustre/projects/Research_Project-191391/Morteza/circRNA
-genome_fasta=/lustre/projects/Research_Project-191391/Morteza/circRNA/Ref_Genome/GRCh38.p14.genome.fa
-genome_gtf=/lustre/projects/Research_Project-191391/Morteza/circRNA/Ref_Genome/gencode.v47.chr_patch_hapl_scaff.annotation.gtf
+out_dir./Results
+fastq_dir=./Raw
+genome_fasta=./GRCh38.p14.genome.fa
+genome_gtf=./gencode.v47.chr_patch_hapl_scaff.annotation.gtf
 circ_annot=
 thread=16
 collapse_only=yes
