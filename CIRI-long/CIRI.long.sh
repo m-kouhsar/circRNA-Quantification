@@ -12,29 +12,30 @@
 #########################################################################################
 #########################################################################################
 
-out_dir./Results
+out_dir=./Results
 fastq_dir=./Raw
 genome_fasta=./GRCh38.p14.genome.fa
 genome_gtf=./gencode.v47.chr_patch_hapl_scaff.annotation.gtf
-circ_annot=
+circ_annot=./circAtlas_human_bed_v3.0.bed
+call_only=no
 thread=16
-collapse_only=yes
 #######################################################################################
 #######################################################################################
 
 out_dir_call=${out_dir}/CIRI.long.Call
 out_dir_collapse=${out_dir}/CIRI.long.Collapse
 fastq_files=(${fastq_dir}/*.fastq)
-collapse_only=$(echo $collapse_only | xargs)
-collapse_only=$(echo $collapse_only | tr '[:upper:]' '[:lower:]')
 circ_annot=$(echo $circ_annot | xargs)
+call_only=$(echo $call_only | xargs)
+call_only=$(echo "$call_only" | tr '[:upper:]' '[:lower:]')
 
 echo Output directory: $out_dir
 echo Fastq files directory: $fastq_dir
 echo Genome fasta file: $genome_fasta
 echo Genome fasta file: $genome_gtf
-echo circRNA anootation file (optional): $circ_annot
-echo Running collapse mode only? $collapse_only
+echo "circRNA anootation file (optional): $circ_annot"
+echo "Run Call mode only? $call_only"
+echo Total number of samples: $Num_samp
 echo Number of CPU cores: $thread
 
 echo "##########################################################################"
@@ -48,43 +49,43 @@ do
 	f_name=$(basename $f)
 	f_name=${f_name%".fastq"}
 
-	if [ "$collapse_only" = "yes" ]
-	then
-		echo "*********************************************************************************"
-		echo "*********************************************************************************"
-		echo "                Running CIRI-long Call on ${f_name}:                             "
-		echo "*********************************************************************************"
-		echo "*********************************************************************************"
-		CIRI-long call -i $f \
-			-o ${out_dir_call}/${f_name} \
-			-r $genome_fasta \
-			-p $f_name \
-			-a $genome_gtf \
-			-t $thread
-	fi
+	echo "*********************************************************************************"
+	echo "*********************************************************************************"
+	echo "                Running CIRI-long Call on ${f_name}:                             "
+	echo "*********************************************************************************"
+	echo "*********************************************************************************"
+	CIRI-long call -i $f \
+		-o ${out_dir_call}/${f_name} \
+		-r $genome_fasta \
+		-p $f_name \
+		-a $genome_gtf \
+		-t $thread
 
-	echo $f_name ${out_dir_call}/${f_name}/${f_name}.cand_circ.fa > ${out_dir_call}/${f_name}/${f_name}.lst
-	echo "*********************************************************************************"
-	echo "*********************************************************************************"
-	echo "                Running CIRI-long Collapse on ${f_name}:                         "
-	echo "*********************************************************************************"
-	echo "*********************************************************************************"
-	if [ "$circ_annot" != "" ]
+	if [ "$call_only" != "yes" ]
 	then
-		CIRI-long collapse -i ${out_dir_call}/${f_name}/${f_name}.lst \
-			-o ${out_dir_collapse}/${f_name} \
-			-p $f_name \
-			-r $genome_fasta \
-			-a $genome_gtf \
-			-c $circ_annot \
-			-t $thread
-	else
-		CIRI-long collapse -i ${out_dir_call}/${f_name}/${f_name}.lst \
-			-o ${out_dir_collapse}/${f_name} \
-			-p $f_name \
-			-r $genome_fasta \
-			-a $genome_gtf \
-			-t $thread
+		echo $f_name ${out_dir_call}/${f_name}/${f_name}.cand_circ.fa > ${out_dir_call}/${f_name}/${f_name}.lst
+		echo "*********************************************************************************"
+		echo "*********************************************************************************"
+		echo "                Running CIRI-long Collapse on ${f_name}:                         "
+		echo "*********************************************************************************"
+		echo "*********************************************************************************"
+		if [ "$circ_annot" != "" ]
+		then
+			CIRI-long collapse -i ${out_dir_call}/${f_name}/${f_name}.lst \
+				-o ${out_dir_collapse}/${f_name} \
+				-p $f_name \
+				-r $genome_fasta \
+				-a $genome_gtf \
+				-c $circ_annot \
+				-t $thread
+		else
+			CIRI-long collapse -i ${out_dir_call}/${f_name}/${f_name}.lst \
+				-o ${out_dir_collapse}/${f_name} \
+				-p $f_name \
+				-r $genome_fasta \
+				-a $genome_gtf \
+				-t $thread
+		fi
    fi
 done
 
