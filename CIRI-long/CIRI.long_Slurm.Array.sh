@@ -8,7 +8,7 @@
 #SBATCH --ntasks-per-node=16 # specify number of processors.
 #SBATCH --mail-type=END # send email at job completion
 #SBATCH --mail-user=m.kouhsar@exeter.ac.uk # email address
-#SBATCH --array=1-10
+#SBATCH --array=0-9
 
 #########################################################################################
 #########################################################################################
@@ -17,18 +17,19 @@ out_dir=./Results
 fastq_dir=./Raw
 genome_fasta=./GRCh38.p14.genome.fa
 genome_gtf=./gencode.v47.chr_patch_hapl_scaff.annotation.gtf
-circ_annot=
-thread=16
-collapse_only=yes
+circ_annot=./circAtlas_human_bed_v3.0.bed
+call_only=no
+thread=15
 #######################################################################################
 #######################################################################################
 
-out_dir_call=${out_dir}/CIRI.long.Call.${SLURM_ARRAY_TASK_ID}
-out_dir_collapse=${out_dir}/CIRI.long.Collapse.${SLURM_ARRAY_TASK_ID}
+out_dir_call=${out_dir}/CIRI.long.Call
+out_dir_collapse=${out_dir}/CIRI.long.Collapse
 fastq_files=(${fastq_dir}/*.fastq)
-collapse_only=$(echo $collapse_only | xargs)
-collapse_only=$(echo $collapse_only | tr '[:upper:]' '[:lower:]')
 circ_annot=$(echo $circ_annot | xargs)
+call_only=$(echo $call_only | xargs)
+call_only=$(echo "$call_only" | tr '[:upper:]' '[:lower:]')
+
 
 Num_samp=${#fastq_files[@]}
 window_size=$(( Num_samp / SLURM_ARRAY_TASK_COUNT + 1 ))
@@ -46,13 +47,15 @@ echo Output directory: $out_dir
 echo Fastq files directory: $fastq_dir
 echo Genome fasta file: $genome_fasta
 echo Genome fasta file: $genome_gtf
-echo Genome circRNA anootation file (optional): $circ_annot
+echo "Genome circRNA anootation file (optional): $circ_annot"
+echo "Run Call mode only? $call_only"
 echo Number of CPU cores: $thread
-echo Run collaps mode only? $collapse_only
-echo Start array index: $SLURM_ARRAY_TASK_COUNT
-echo End array index : $SLURM_ARRAY_TASK_COUNT
+echo Start array index: $SLURM_ARRAY_TASK_MIN
+echo End array index : $SLURM_ARRAY_TASK_MAX
 echo numer of arrays: $SLURM_ARRAY_TASK_COUNT
 echo current array index: $SLURM_ARRAY_TASK_ID
+echo Total number of samples: $Num_samp
+echo number of samples in the current array: ${#fastq_files1[@]}
 
 echo "##########################################################################"
 echo -e '\n'
@@ -65,43 +68,44 @@ do
 	f_name=$(basename $f)
 	f_name=${f_name%".fastq"}
 
-	if [ "$collapse_only" = "yes" ]
-	then
-		echo "*********************************************************************************"
-		echo "*********************************************************************************"
-		echo "                Running CIRI-long Call on ${f_name}:                             "
-		echo "*********************************************************************************"
-		echo "*********************************************************************************"
-		CIRI-long call -i $f \
-			-o ${out_dir_call}/${f_name} \
-			-r $genome_fasta \
-			-p $f_name \
-			-a $genome_gtf \
-			-t $thread
-	fi
 
-	echo $f_name ${out_dir_call}/${f_name}/${f_name}.cand_circ.fa > ${out_dir_call}/${f_name}/${f_name}.lst
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
-	echo "                Running CIRI-long Collapse on ${f_name}:                         "
+	echo "                Running CIRI-long Call on ${f_name}:                             "
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
-	if [ "$circ_annot" != "" ]
+	CIRI-long call -i $f \
+		-o ${out_dir_call}/${f_name} \
+		-r $genome_fasta \
+		-p $f_name \
+		-a $genome_gtf \
+		-t $thread
+	
+	if [ "$call_only" != "yes" ]
 	then
-		CIRI-long collapse -i ${out_dir_call}/${f_name}/${f_name}.lst \
-			-o ${out_dir_collapse}/${f_name} \
-			-p $f_name \
-			-r $genome_fasta \
-			-a $genome_gtf \
-			-c $circ_annot \
-			-t $thread
-	else
-		CIRI-long collapse -i ${out_dir_call}/${f_name}/${f_name}.lst \
-			-o ${out_dir_collapse}/${f_name} \
-			-p $f_name \
-			-r $genome_fasta \
-			-a $genome_gtf \
-			-t $thread
+		echo $f_name ${out_dir_call}/${f_name}/${f_name}.cand_circ.fa > ${out_dir_call}/${f_name}/${f_name}.lst
+		echo "*********************************************************************************"
+		echo "*********************************************************************************"
+		echo "                Running CIRI-long Collapse on ${f_name}:                         "
+		echo "*********************************************************************************"
+		echo "*********************************************************************************"
+		if [ "$circ_annot" != "" ]
+		then
+			CIRI-long collapse -i ${out_dir_call}/${f_name}/${f_name}.lst \
+				-o ${out_dir_collapse}/${f_name} \
+				-p $f_name \
+				-r $genome_fasta \
+				-a $genome_gtf \
+				-c $circ_annot \
+				-t $thread
+		else
+			CIRI-long collapse -i ${out_dir_call}/${f_name}/${f_name}.lst \
+				-o ${out_dir_collapse}/${f_name} \
+				-p $f_name \
+				-r $genome_fasta \
+				-a $genome_gtf \
+				-t $thread
+		fi
    fi
 done
 
