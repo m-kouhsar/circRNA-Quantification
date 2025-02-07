@@ -30,7 +30,13 @@ cd -
 circ_annot=$(echo $circ_annot | xargs)
 
 Num_samp=${#call_samples[@]}
-window_size=$(( Num_samp / SLURM_ARRAY_TASK_COUNT + 1 ))
+
+if [ $(( Num_samp % SLURM_ARRAY_TASK_COUNT)) -eq 0 ]
+then
+	window_size=$(( Num_samp / SLURM_ARRAY_TASK_COUNT))
+else
+	window_size=$(( Num_samp / SLURM_ARRAY_TASK_COUNT + 1 ))
+fi
 
 lower=$(( SLURM_ARRAY_TASK_ID * window_size ))
 
@@ -85,8 +91,11 @@ do
 			-a $genome_gtf \
 			-t $thread
    fi
+
+   if [ -d "${out_dir_collapse}/${f_name}/tmp" ]
+   then
+		rm -r ${out_dir_collapse}/${f_name}/tmp
+   fi
 done
 
 echo "All the process is done!"
-
-
