@@ -16,7 +16,7 @@ out_dir=./Results
 fastq_dir=./Raw
 genome_fasta=./GRCh38.p14.genome.fa
 genome_gtf=./gencode.v47.chr_patch_hapl_scaff.annotation.gtf
-circ_annot=./circAtlas_human_bed_v3.0.bed
+circ_annot=
 call_only=no
 thread=16
 #######################################################################################
@@ -35,7 +35,7 @@ echo Genome fasta file: $genome_fasta
 echo Genome fasta file: $genome_gtf
 echo "circRNA anootation file (optional): $circ_annot"
 echo "Run Call mode only? $call_only"
-echo Total number of samples: $Num_samp
+echo Total number of samples: ${#fastq_files[@]}
 echo Number of CPU cores: $thread
 
 echo "##########################################################################"
@@ -61,6 +61,11 @@ do
 		-a $genome_gtf \
 		-t $thread
 
+	if [ -d "${out_dir_call}/${f_name}/tmp" ]
+	then
+		rm -r ${out_dir_call}/${f_name}/tmp
+	fi
+
 	if [ "$call_only" != "yes" ]
 	then
 		echo $f_name ${out_dir_call}/${f_name}/${f_name}.cand_circ.fa > ${out_dir_call}/${f_name}/${f_name}.lst
@@ -85,6 +90,11 @@ do
 				-r $genome_fasta \
 				-a $genome_gtf \
 				-t $thread
+		fi
+
+		if [ -d "${out_dir_collapse}/${f_name}/tmp" ]
+		then
+			rm -r ${out_dir_collapse}/${f_name}/tmp
 		fi
    fi
 done
