@@ -8,7 +8,7 @@
 #SBATCH --ntasks-per-node=16 # specify number of processors.
 #SBATCH --mail-type=END # send email at job completion
 #SBATCH --mail-user=m.kouhsar@exeter.ac.uk # email address
-#SBATCH --array=0-9
+#SBATCH --array=0-5
 
 #########################################################################################
 #########################################################################################
@@ -32,7 +32,12 @@ call_only=$(echo "$call_only" | tr '[:upper:]' '[:lower:]')
 
 
 Num_samp=${#fastq_files[@]}
-window_size=$(( Num_samp / SLURM_ARRAY_TASK_COUNT + 1 ))
+if [ $(( Num_samp % SLURM_ARRAY_TASK_COUNT)) -eq 0 ]
+then
+	window_size=$(( Num_samp / SLURM_ARRAY_TASK_COUNT))
+else
+	window_size=$(( Num_samp / SLURM_ARRAY_TASK_COUNT + 1 ))
+fi
 
 lower=$(( SLURM_ARRAY_TASK_ID * window_size ))
 
@@ -81,6 +86,11 @@ do
 		-a $genome_gtf \
 		-t $thread
 	
+	if [ -d "${out_dir_call}/${f_name}/tmp" ]
+	then
+		rm -r ${out_dir_call}/${f_name}/tmp
+	fi
+
 	if [ "$call_only" != "yes" ]
 	then
 		echo $f_name ${out_dir_call}/${f_name}/${f_name}.cand_circ.fa > ${out_dir_call}/${f_name}/${f_name}.lst
@@ -106,7 +116,14 @@ do
 				-a $genome_gtf \
 				-t $thread
 		fi
+
+		if [ -d "${out_dir_collapse}/${f_name}/tmp" ]
+		then
+			rm -r ${out_dir_collapse}/${f_name}/tmp
+		fi
    fi
 done
 
 echo "All the process is done!"
+
+
