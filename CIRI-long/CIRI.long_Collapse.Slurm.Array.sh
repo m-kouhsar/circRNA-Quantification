@@ -13,11 +13,11 @@
 #########################################################################################
 #########################################################################################
 
-out_dir=/lustre/projects/Research_Project-191391/Morteza/circRNA/Results/circAtlas_Annot
-call_dir=/lustre/projects/Research_Project-191391/Morteza/circRNA/Results/CIRI.long.Call
-genome_fasta=/lustre/projects/Research_Project-191391/Morteza/circRNA/Ref_Genome/GRCh38.p14.genome.fa
-genome_gtf=/lustre/projects/Research_Project-191391/Morteza/circRNA/Ref_Genome/gencode.v47.chr_patch_hapl_scaff.annotation.gtf
-circ_annot=/lustre/projects/Research_Project-191391/Morteza/circRNA/Ref_Genome/circAtlas_human_bed_v3.0.bed
+out_dir=./Results
+call_dir=./Results/CIRI.long.Call
+genome_fasta=./GRCh38.p14.genome.fa
+genome_gtf=./gencode.v47.chr_patch_hapl_scaff.annotation.gtf
+circ_annot=./circAtlas_human_bed_v3.0.bed
 thread=15
 
 #######################################################################################
