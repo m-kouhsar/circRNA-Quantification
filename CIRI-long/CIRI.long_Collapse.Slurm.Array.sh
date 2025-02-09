@@ -92,9 +92,9 @@ do
 			-t $thread
    fi
 
-   if [ -d "${out_dir_collapse}/${f_name}/tmp" ]
+   if [ -d "${out_dir_collapse}/${f}/tmp" ]
    then
-		rm -r ${out_dir_collapse}/${f_name}/tmp
+		rm -r ${out_dir_collapse}/${f}/tmp
    fi
 done
 
