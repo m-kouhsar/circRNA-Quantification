@@ -31,12 +31,9 @@ circ_annot=$(echo $circ_annot | xargs)
 
 Num_samp=${#call_samples[@]}
 
-if [ $(( Num_samp % SLURM_ARRAY_TASK_COUNT)) -eq 0 ]
-then
-	window_size=$(( Num_samp / SLURM_ARRAY_TASK_COUNT))
-else
-	window_size=$(( Num_samp / SLURM_ARRAY_TASK_COUNT + 1 ))
-fi
+# Ref: https://stackoverflow.com/questions/2395284/round-a-divided-number-in-bash
+denom_2=$(( SLURM_ARRAY_TASK_COUNT / 2 ))
+window_size=$(( ( Num_samp + denom_2 ) / SLURM_ARRAY_TASK_COUNT ))
 
 lower=$(( SLURM_ARRAY_TASK_ID * window_size ))
 
@@ -66,11 +63,15 @@ echo -e '\n'
 
 mkdir -p $out_dir_collapse
 
+j=0
+
 for f in ${call_samples1[@]}
 do
+  
+  j=$(( j + 1 ))
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
-	echo "                Running CIRI-long Collapse on $f:                         "
+	echo "                Running CIRI-long Collapse on sample $j: $f                      "
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
 	echo $f ${call_dir}/${f}/${f}.cand_circ.fa > ${call_dir}/${f}/${f}.lst
@@ -99,3 +100,5 @@ do
 done
 
 echo "All the process is done!"
+
+
