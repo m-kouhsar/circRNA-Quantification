@@ -44,22 +44,37 @@ echo -e '\n'
 mkdir -p $out_dir_call
 mkdir -p $out_dir_collapse
 
+j=0
+
 for f in ${fastq_files[@]}
 do
 	f_name=$(basename $f)
 	f_name=${f_name%".fastq"}
 
+	j=$(( j + 1 ))
+
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
-	echo "                Running CIRI-long Call on ${f_name}:                             "
+	echo "                Running CIRI-long Call on sample $j: ${f_name}:                             "
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
-	CIRI-long call -i $f \
-		-o ${out_dir_call}/${f_name} \
-		-r $genome_fasta \
-		-p $f_name \
-		-a $genome_gtf \
-		-t $thread
+	if [ "$circ_annot" != "" ]
+	then
+		CIRI-long call -i $f \
+			-o ${out_dir_call}/${f_name} \
+			-r $genome_fasta \
+			-p $f_name \
+			-a $genome_gtf \
+			-c $circ_annot \
+			-t $thread
+	else
+		CIRI-long call -i $f \
+			-o ${out_dir_call}/${f_name} \
+			-r $genome_fasta \
+			-p $f_name \
+			-a $genome_gtf \
+			-t $thread
+	fi
 
 	if [ -d "${out_dir_call}/${f_name}/tmp" ]
 	then
@@ -71,7 +86,7 @@ do
 		echo $f_name ${out_dir_call}/${f_name}/${f_name}.cand_circ.fa > ${out_dir_call}/${f_name}/${f_name}.lst
 		echo "*********************************************************************************"
 		echo "*********************************************************************************"
-		echo "                Running CIRI-long Collapse on ${f_name}:                         "
+		echo "                Running CIRI-long Collapse on sample $j: ${f_name}:                         "
 		echo "*********************************************************************************"
 		echo "*********************************************************************************"
 		if [ "$circ_annot" != "" ]
