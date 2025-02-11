@@ -20,6 +20,7 @@ genome_gtf=./gencode.v47.chr_patch_hapl_scaff.annotation.gtf
 circ_annot=./circAtlas_human_bed_v3.0.bed
 call_only=no
 thread=15
+
 #######################################################################################
 #######################################################################################
 
@@ -30,14 +31,11 @@ circ_annot=$(echo $circ_annot | xargs)
 call_only=$(echo $call_only | xargs)
 call_only=$(echo "$call_only" | tr '[:upper:]' '[:lower:]')
 
-
 Num_samp=${#fastq_files[@]}
-if [ $(( Num_samp % SLURM_ARRAY_TASK_COUNT)) -eq 0 ]
-then
-	window_size=$(( Num_samp / SLURM_ARRAY_TASK_COUNT))
-else
-	window_size=$(( Num_samp / SLURM_ARRAY_TASK_COUNT + 1 ))
-fi
+
+# Ref: https://stackoverflow.com/questions/2395284/round-a-divided-number-in-bash
+denom_2=$(( SLURM_ARRAY_TASK_COUNT / 2 ))
+window_size=$(( ( Num_samp + denom_2 ) / SLURM_ARRAY_TASK_COUNT ))
 
 lower=$(( SLURM_ARRAY_TASK_ID * window_size ))
 
@@ -68,24 +66,38 @@ echo -e '\n'
 mkdir -p $out_dir_call
 mkdir -p $out_dir_collapse
 
+j=0
+
 for f in ${fastq_files1[@]}
 do
 	f_name=$(basename $f)
 	f_name=${f_name%".fastq"}
 
+  j=$(( j + 1 ))
 
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
-	echo "                Running CIRI-long Call on ${f_name}:                             "
+	echo "                Running CIRI-long Call on sample $j: ${f_name}                   "
 	echo "*********************************************************************************"
 	echo "*********************************************************************************"
-	CIRI-long call -i $f \
-		-o ${out_dir_call}/${f_name} \
-		-r $genome_fasta \
-		-p $f_name \
-		-a $genome_gtf \
-		-t $thread
-	
+	if [ "$circ_annot" != "" ]
+	then
+			CIRI-long call -i $f \
+			-o ${out_dir_call}/${f_name} \
+			-r $genome_fasta \
+			-p $f_name \
+			-a $genome_gtf \
+			-c $circ_annot \
+			-t $thread
+	else
+		CIRI-long call -i $f \
+			-o ${out_dir_call}/${f_name} \
+			-r $genome_fasta \
+			-p $f_name \
+			-a $genome_gtf \
+			-t $thread
+	fi
+
 	if [ -d "${out_dir_call}/${f_name}/tmp" ]
 	then
 		rm -r ${out_dir_call}/${f_name}/tmp
@@ -96,7 +108,7 @@ do
 		echo $f_name ${out_dir_call}/${f_name}/${f_name}.cand_circ.fa > ${out_dir_call}/${f_name}/${f_name}.lst
 		echo "*********************************************************************************"
 		echo "*********************************************************************************"
-		echo "                Running CIRI-long Collapse on ${f_name}:                         "
+		echo "                Running CIRI-long Call on sample $j: ${f_name}                   "
 		echo "*********************************************************************************"
 		echo "*********************************************************************************"
 		if [ "$circ_annot" != "" ]
@@ -125,5 +137,3 @@ do
 done
 
 echo "All the process is done!"
-
-
