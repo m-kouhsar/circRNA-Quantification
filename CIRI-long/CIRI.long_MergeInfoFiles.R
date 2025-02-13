@@ -1,6 +1,7 @@
 
 suppressMessages(library(stringr))
 suppressMessages(library(dplyr))
+suppressMessages(library(tidyr))
 
 ####################################################################
 read.info <- function(info.path,info.id){
