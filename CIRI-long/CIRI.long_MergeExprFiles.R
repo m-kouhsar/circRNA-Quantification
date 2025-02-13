@@ -20,6 +20,6 @@ for (i in 2:length(collapse.path)) {
   data_ = read.table(file = paste0(collapse.path[i],"/",collapse.id[i],".expression") , header = T,sep = '\t')
   results <- full_join(results , data_ , by= "circ_ID",) 
 }
-
+results <- mutate_all(results,~replace_na(., 0))
 write.table(results , file = paste(OutPrefix , "CIRIlong.circExpr.txt" ,sep = ifelse(OutPrefix == "" , "",".")),
             row.names = F,col.names = T,sep = '\t',quote = F)
