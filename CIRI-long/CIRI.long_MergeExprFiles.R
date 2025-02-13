@@ -1,6 +1,7 @@
 
 suppressMessages(library(stringr))
 suppressMessages(library(dplyr))
+suppressMessages(library(tidyr))
 
 arguments <- commandArgs(T)
 
