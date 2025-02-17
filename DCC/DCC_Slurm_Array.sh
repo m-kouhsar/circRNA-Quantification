@@ -22,7 +22,8 @@ module load SAMtools
 
 samples=($(ls ${DataDir}/*R1*.gz))
 Num_samp=${#samples[@]}
-window_size=$(( Num_samp / SLURM_ARRAY_TASK_COUNT + 1 ))
+denom_2=$(( SLURM_ARRAY_TASK_COUNT / 2 ))
+window_size=$(( ( Num_samp + denom_2 ) / SLURM_ARRAY_TASK_COUNT ))
 
 lower=$(( SLURM_ARRAY_TASK_ID * window_size ))
 next=$(( SLURM_ARRAY_TASK_ID + 1 ))
