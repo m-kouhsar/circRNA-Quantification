@@ -17,6 +17,7 @@ fastq_dir=./Raw
 genome_fasta=./GRCh38.p14.genome.fa
 genome_gtf=./gencode.v47.chr_patch_hapl_scaff.annotation.gtf
 circ_annot=
+file_identifier=fastq   # fastq fq.gz fastq.gz
 call_only=no
 thread=16
 #######################################################################################
@@ -24,7 +25,7 @@ thread=16
 
 out_dir_call=${out_dir}/CIRI.long.Call
 out_dir_collapse=${out_dir}/CIRI.long.Collapse
-fastq_files=(${fastq_dir}/*.fastq)
+fastq_files=(${fastq_dir}/*.${file_identifier})
 circ_annot=$(echo $circ_annot | xargs)
 call_only=$(echo $call_only | xargs)
 call_only=$(echo "$call_only" | tr '[:upper:]' '[:lower:]')
