@@ -50,7 +50,7 @@ j=0
 for f in ${fastq_files[@]}
 do
 	f_name=$(basename $f)
-	f_name=${f_name%".fastq"}
+	f_name=${f_name%".$file_identifier"}
 
 	j=$(( j + 1 ))
 
